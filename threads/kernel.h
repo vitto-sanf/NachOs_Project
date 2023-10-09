@@ -45,6 +45,9 @@ class Kernel {
     void ConsoleTest();         // interactive console self test
 
     void NetworkTest();         // interactive 2-machine network test
+
+    void prova2();
+    static void Lab1Exercise3Thread(void *);
     
 // These are public for notational convenience; really, 
 // they're global variables used everywhere.

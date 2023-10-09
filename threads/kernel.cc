@@ -19,7 +19,7 @@
 #include "synchdisk.h"
 #include "post.h"
 #include "thread.h"
-#include "test.h"
+//#include "test.h"
 //----------------------------------------------------------------------
 // Kernel::Kernel
 // 	Interpret command line arguments in order to determine flags 
@@ -136,6 +136,40 @@ Kernel::~Kernel()
     Exit(0);
 }
 
+
+
+void
+Kernel::Lab1Exercise3Thread(void *which)
+{
+    
+    Kernel* _this = (Kernel*)which;
+    int num;
+
+    for (num = 0; num < 5; num++) {
+    printf("*** thread %d (uid=%d, tid=%d) looped %d times\n", which, kernel->currentThread->getUserId(), kernel->currentThread->getThreadId(), num);
+        kernel->currentThread->Yield();
+    }
+}
+
+void 
+Kernel::prova2 () {
+    //printf("Ciao!");
+    printf("Esecuzione");
+    DEBUG('t', "Entering test tid : ");
+    const int max_Thread = 5 ; 
+    const int uid = 87 ; 
+
+     for( int i = 0 ; i < max_Thread; i++){
+        Thread *t = new Thread("test Thread");
+        t-> setUserId(uid);
+        //t-> Fork ((VoidFunctionPtr)Lab1Exercise3Thread, (void*)t->getThreadId());
+        t-> Fork (Kernel::Lab1Exercise3Thread, (void*)t->getThreadId());
+     }
+     Lab1Exercise3Thread(0);
+}
+
+
+
 //----------------------------------------------------------------------
 // Kernel::ThreadSelfTest
 //      Test threads, semaphores, synchlists
@@ -148,7 +182,8 @@ Kernel::ThreadSelfTest(char* numTest) {
 
     
     if (!strcmp(numTest,"1")){
-       testTid();
+        prova2();
+       //printf("Ciao!");
     }else{
         printf("else----%s\n", numTest);
         Semaphore *semaphore;
