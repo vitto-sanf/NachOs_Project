@@ -81,6 +81,12 @@ Initialize(int argc, char **argv)
     char* debugArgs = "";
     bool randomYield = FALSE;
 
+     //quando il sistema viene inizializzato tutti gli elementi dell'array vengono posti a False
+    for (int i = 0; i < MAX_THREAD_NUM; i++) {
+        tid_flag[i] = FALSE;
+    }
+
+
 #ifdef USER_PROGRAM
     bool debugUserProg = FALSE;	// single step user program
 #endif

@@ -34,10 +34,22 @@
 
 Thread::Thread(char* threadName)
 {
+    //vado a cercare un posto libero all'interno dell' array , se lo trovo l' indice dell' array
+    //diventa il thread id 
+    for (int i = 0; i < MAX_THREAD_NUM; i++) { 
+        if (!tid_flag[i]) {
+            this->tid = i;
+            tid_flag[i] = TRUE;
+            
+            break;
+        }
+    }
+
     name = threadName;
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
+
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
@@ -60,6 +72,8 @@ Thread::~Thread()
     DEBUG('t', "Deleting thread \"%s\"\n", name);
 
     ASSERT(this != currentThread);
+    //prima che il thread venga distutto libero il posto nell 'array 
+    tid_flag[this->tid] = FALSE;
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }
