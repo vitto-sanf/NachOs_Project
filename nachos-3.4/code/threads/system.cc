@@ -10,7 +10,8 @@
 
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
-
+bool tid_flag[MAX_THREAD_NUM];
+Thread *tid_pointer[MAX_THREAD_NUM];
 Thread *currentThread;			// the thread we are running now
 Thread *threadToBeDestroyed;  		// the thread that just finished
 Scheduler *scheduler;			// the ready list

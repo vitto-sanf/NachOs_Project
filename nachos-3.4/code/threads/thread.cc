@@ -36,14 +36,22 @@ Thread::Thread(char* threadName)
 {
     //vado a cercare un posto libero all'interno dell' array , se lo trovo l' indice dell' array
     //diventa il thread id 
+    bool success_allocate = FALSE;
     for (int i = 0; i < MAX_THREAD_NUM; i++) { 
         if (!tid_flag[i]) {
             this->tid = i;
             tid_flag[i] = TRUE;
-            
+            tid_pointer[i]=this;// se il thread può essere allocato, salviamo il suo puntatore nella stesso indice 
+            success_allocate = TRUE;
             break;
         }
     }
+
+     if (!success_allocate) {
+        printf("Reach maximum threads number %d, unable to allocate!!", MAX_THREAD_NUM);
+    }
+    ASSERT(success_allocate); // fai l'abort se non c'è posto per allocare un nuovo thread
+   
 
     name = threadName;
     stackTop = NULL;
@@ -74,6 +82,7 @@ Thread::~Thread()
     ASSERT(this != currentThread);
     //prima che il thread venga distutto libero il posto nell 'array 
     tid_flag[this->tid] = FALSE;
+    tid_pointer[this->tid]= NULL;
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }

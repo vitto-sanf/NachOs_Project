@@ -29,7 +29,8 @@ extern Interrupt *interrupt;			// interrupt status
 extern Statistics *stats;			// performance metrics
 extern Timer *timer;				// the hardware alarm clock
 
-extern bool tid_flag[MAX_THREAD_NUM];
+extern bool tid_flag[MAX_THREAD_NUM]; // array che tiene traccia dei thread nel sistema 
+extern Thread *tid_pointer[MAX_THREAD_NUM];// array che mantiene i puntatori ai thread 
 
 #ifdef USER_PROGRAM
 #include "machine.h"
