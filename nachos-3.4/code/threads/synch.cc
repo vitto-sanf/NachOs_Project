@@ -100,10 +100,50 @@ Semaphore::V()
 // Dummy functions -- so we can compile our later assignments 
 // Note -- without a correct implementation of Condition::Wait(), 
 // the test case in the network assignment won't work!
-Lock::Lock(char* debugName) {}
-Lock::~Lock() {}
-void Lock::Acquire() {}
-void Lock::Release() {}
+Lock::Lock(char* debugName) {
+    name = debugName;
+    semaphore= new Semaphore("Lock",1);
+    lock_owner= NULL ; 
+}
+Lock::~Lock() {
+   delete semaphore; 
+}
+void Lock::Acquire() {
+    //controllo che il lock non sia già acquisito 
+    ASSERT(! this -> isHeldByCurrentThread());
+
+    //mascheriamo gli interrupt per evitare che il thread che sta acquisendo il lock venga tolto dalla cpu
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+    DEBUG ('s', "Lock \%s\" Acquired by Thread \"%s\"\n", name , currentThread->getName());
+
+    //utilizziamo il semaforo binario per gestire l'acquisizione o l'eventuale wait 
+    semaphore->P();
+    lock_owner= currentThread;
+
+    //abilitiamo nuovamente gli interrupt 
+    (void) interrupt -> SetLevel (oldLevel);
+}
+void Lock::Release() {
+    //controllo che il lock che sta facendo la release sia effettivamente l' owner del lock 
+    ASSERT( this -> isHeldByCurrentThread());
+
+    //disabilito gli interrupt 
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+    DEBUG ('s', "Lock \%s\" Released by Thread \"%s\"\n", name , currentThread->getName());
+    lock_owner = NULL ; 
+
+    semaphore->V();
+
+    //abilitiamo gli interrupt 
+     (void) interrupt -> SetLevel (oldLevel);
+}
+
+bool Lock::isHeldByCurrentThread(){
+
+    return lock_owner==currentThread;
+}
 
 Condition::Condition(char* debugName) { }
 Condition::~Condition() { }

@@ -80,6 +80,8 @@ class Lock {
   private:
     char* name;				// for debugging
     // plus some other stuff you'll need to define
+    Thread * lock_owner;
+    Semaphore *semaphore;
 };
 
 // The following class defines a "condition variable".  A condition
