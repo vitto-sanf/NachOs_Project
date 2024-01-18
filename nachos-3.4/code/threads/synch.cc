@@ -145,8 +145,74 @@ bool Lock::isHeldByCurrentThread(){
     return lock_owner==currentThread;
 }
 
-Condition::Condition(char* debugName) { }
+Condition::Condition(char* debugName) {
+    name = debugName;
+    queue= new List; 
+ }
+
 Condition::~Condition() { }
-void Condition::Wait(Lock* conditionLock) { ASSERT(FALSE); }
-void Condition::Signal(Lock* conditionLock) { }
-void Condition::Broadcast(Lock* conditionLock) { }
+
+void Condition::Wait(Lock* conditionLock) { 
+    //ASSERT(FALSE); 
+
+    //disabilitiamo  gli interrupt 
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+    //Verifichiamo che il Thread che sta andando in sleep sia l'owner del lock 
+    ASSERT( conditionLock -> isHeldByCurrentThread());
+    
+    //Rilasciamo il lock prima di andare in sleep 
+    conditionLock->Release();
+
+    //inseriamo il thread nella coda di sleep 
+
+    queue->Append(currentThread);
+    currentThread->Sleep();
+
+    //Dopo l'awake il Thread riacquista il lock 
+    conditionLock->Acquire();
+
+    
+    (void) interrupt -> SetLevel (oldLevel); 
+    }
+
+void Condition::Signal(Lock* conditionLock) { 
+
+    //disabilito gli interrupt 
+
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+    
+    ASSERT( conditionLock -> isHeldByCurrentThread());
+
+    //sveglio il primo Thread in coda, se ce n'è qualcuno 
+
+    if(!queue->IsEmpty()){
+        Thread *nextThread = queue->Remove();
+
+        scheduler->ReadyToRun(nextThread);
+    }
+
+    (void) interrupt -> SetLevel (oldLevel); 
+
+}
+
+
+void Condition::Broadcast(Lock* conditionLock) {
+
+    //disabilito gli interrupt 
+
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+    
+    ASSERT( conditionLock -> isHeldByCurrentThread());
+
+    //sveglio tuttii thread in coda
+
+    while(!queue->IsEmpty()){
+        Signal(conditionLock);
+    }
+
+    (void) interrupt -> SetLevel (oldLevel); 
+
+ }
+
+

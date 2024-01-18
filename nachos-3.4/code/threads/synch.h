@@ -133,6 +133,8 @@ class Condition {
 
   private:
     char* name;
+    List* queue; //Coda di attesa per il thread bloccato da questa condition
+
     // plus some other stuff you'll need to define
 };
 #endif // SYNCH_H
