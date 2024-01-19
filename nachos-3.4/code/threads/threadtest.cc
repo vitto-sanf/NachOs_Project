@@ -147,6 +147,8 @@ ThreadTest()
     case 1:
 	ThreadTest1();
 	break;
+    case 4 : 
+    SyncTest();
     default:
 	printf("No test specified.\n");
 	break;
