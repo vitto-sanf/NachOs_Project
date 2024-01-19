@@ -37,6 +37,43 @@ TS()
     }
 }
 
+//----------------------------------------------------------------------
+// CustomThreadFunc
+//
+// "which" is simply a number identifying the operation to do on current thread
+//----------------------------------------------------------------------
+
+void
+CustomThreadFunc(int which)
+{
+    DEBUG('t', "Entering CustomThreadFunc");
+    printf("*** current thread (uid=%d, tid=%d, priority= %d,  name=%s) => ", currentThread->getUserId(), currentThread->getThreadId(), currentThread->getPriority(), currentThread->getName());
+    IntStatus oldLevel;
+    switch (which)
+    {
+        case 0:
+            printf("Yield\n");
+            scheduler->Print();
+            printf("\n\n");
+            currentThread->Yield();
+            break;
+        case 1:
+            printf("Sleep\n");
+            oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+            currentThread->Sleep();
+            (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+            break;
+        case 2:
+            printf("Finish\n");
+            currentThread->Finish();
+            break;
+        default:
+            printf("Yield (default)\n");
+            currentThread->Yield();
+            break;
+    }
+} 
+
 
 //----------------------------------------------------------------------
 // SimpleThread
