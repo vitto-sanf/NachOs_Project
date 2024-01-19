@@ -87,6 +87,8 @@ Initialize(int argc, char **argv)
         tid_flag[i] = FALSE;
     }
 
+    bool roundRobin = FALSE; //  Round robin
+
 
 #ifdef USER_PROGRAM
     bool debugUserProg = FALSE;	// single step user program
@@ -115,6 +117,11 @@ Initialize(int argc, char **argv)
 	    randomYield = TRUE;
 	    argCount = 2;
 	}
+    else if (!strcmp(*argv, "-rr")) {//activate RR timer
+        ASSERT(argc > 1);
+        roundRobin = TRUE;
+        argCount = 2;
+    }
 #ifdef USER_PROGRAM
 	if (!strcmp(*argv, "-s"))
 	    debugUserProg = TRUE;
@@ -142,6 +149,10 @@ Initialize(int argc, char **argv)
     scheduler = new Scheduler();		// initialize the ready queue
     if (randomYield)				// start the timer (if needed)
 	timer = new Timer(TimerInterruptHandler, 0, randomYield);
+
+    //ROUND ROBIN
+    if (roundRobin) // start the RR timer
+    timer = new Timer(RRHandler, 0, FALSE);
 
     threadToBeDestroyed = NULL;
 
