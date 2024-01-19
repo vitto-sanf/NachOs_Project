@@ -88,6 +88,8 @@ class Thread {
     int getThreadId() { return (tid); }         
     int getUserId() { return (uid); } 
 
+    ThreadStatus getThreadStatus(){ return (status);} 
+
     void setUserId(int userId) { uid = userId; }
    
     Thread(char* debugName);		// initialize a Thread 
