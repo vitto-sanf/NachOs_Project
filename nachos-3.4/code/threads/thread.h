@@ -82,16 +82,19 @@ class Thread {
     int tid;            //Thread ID                 
     int uid;            //User ID 
 
+    int priority;
 
   public:
 
     int getThreadId() { return (tid); }         
     int getUserId() { return (uid); } 
+    int getPriority() {return(priority);}
 
     ThreadStatus getThreadStatus(){ return (status);} 
 
     void setUserId(int userId) { uid = userId; }
    
+    void setPriority (int p ) {priority = p; }
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted

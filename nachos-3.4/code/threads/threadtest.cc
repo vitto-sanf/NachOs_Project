@@ -28,11 +28,11 @@ TS()
 
     const char* TStoString[] = {"JUST_CREATED", "RUNNING", "READY", "BLOCKED"};
 
-    printf("UID\tTID\tNAME\tSTATUS\n");
+    printf("UID\tTID\tNAME\tPRI\tSTATUS\n");
     for (int i = 0; i < MAX_THREAD_NUM; i++) { 
         if (tid_pointer[i]) {
           
-           printf("%d\t%d\t%s\t%s\n", tid_pointer[i]->getUserId(), tid_pointer[i]->getThreadId(), tid_pointer[i]->getName(), TStoString[tid_pointer[i]->getThreadStatus()]);
+           printf("%d\t%d\t%s\t%d\t%s\n", tid_pointer[i]->getUserId(), tid_pointer[i]->getThreadId(), tid_pointer[i]->getName(), tid_pointer[i]->getPriority(),TStoString[tid_pointer[i]->getThreadStatus()]);
         }
     }
 }

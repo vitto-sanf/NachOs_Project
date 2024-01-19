@@ -33,6 +33,7 @@
 //----------------------------------------------------------------------
 
 Thread::Thread(char* threadName)
+        : priority (p)
 {
     //vado a cercare un posto libero all'interno dell' array , se lo trovo l' indice dell' array
     //diventa il thread id 
@@ -62,6 +63,11 @@ Thread::Thread(char* threadName)
     space = NULL;
 #endif
 }
+
+Thread::Thread (char* threadName)
+        : Thread(ThreadName,0) 
+{}
+
 
 //----------------------------------------------------------------------
 // Thread::~Thread
