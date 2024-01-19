@@ -18,6 +18,27 @@
 int testnum = 1;
 
 //----------------------------------------------------------------------
+// TS command
+// Showing current threads' status (like ps in Linux)
+//----------------------------------------------------------------------
+void
+TS()
+{
+    DEBUG('t', "Entering TS");
+
+    const char* TStoString[] = {"JUST_CREATED", "RUNNING", "READY", "BLOCKED"};
+
+    printf("UID\tTID\tNAME\tSTATUS\n");
+    for (int i = 0; i < MAX_THREAD_NUM; i++) { 
+        if (tid_pointer[i]) {
+          
+           printf("%d\t%d\t%s\t%s\n", tid_pointer[i]->getUserId(), tid_pointer[i]->getThreadId(), tid_pointer[i]->getName(), TStoString[tid_pointer[i]->getThreadStatus()]);
+        }
+    }
+}
+
+
+//----------------------------------------------------------------------
 // SimpleThread
 // 	Loop 5 times, yielding the CPU to another ready thread 
 //	each iteration.
