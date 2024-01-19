@@ -12,6 +12,7 @@
 #include "copyright.h"
 #include "system.h"
 #include "elevatortest.h"
+#include "synch.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -52,6 +53,87 @@ ThreadTest1()
     t->Fork(SimpleThread, (void*)1);
     SimpleThread(0);
 }
+
+//----------------------------------------------------------------------
+///Functions to test Lock and Condition Variable implementation 
+//----------------------------------------------------------------------
+
+Condition * cond_Consumer = new Condition ("Consumer Condition");
+Condition * cond_Producer = new Condition ("Producer Condition");
+
+Lock *resourceLock = new Lock ("Lock");
+
+int resource = 0 ; 
+int limit = 10 ; 
+
+//----------------------------------------------------------------------
+///Producer
+//The producer thread will try to access the resource, 
+//if it has reached the limit it will go to sleep,
+// otherwise it will increment the resource and send a signal to the consumer thread
+//----------------------------------------------------------------------
+
+void Producer (){
+    for(int i = 0; i < 30 ; i++){
+        resourceLock->Acquire();
+
+        while (resource>= limit){
+            printf("Le risorse hanno raggiunto il limite, il Produttore %s va in sleep \n", currentThread->getName());
+            cond_Producer->Wait(resourceLock);
+        }
+
+        ++resource;
+        printf("Il produttore %s ha aggiunto una risorsa, tot %d\n", currentThread->getName(), resource);
+
+        cond_Consumer->Signal(resourceLock);
+        resourceLock->Release();
+    }
+}
+
+
+//----------------------------------------------------------------------
+///Consumer
+//The consumer thread will try to access the resource,
+// if it is 0 it will go to sleep, 
+//otherwise it will decrement the resource and send a signal to the producer Thread//
+//----------------------------------------------------------------------
+
+void Consumer (){
+
+    for(int i = 0; i < 30 ; i++){
+        resourceLock->Acquire();
+
+        while (resource<= 0){
+            printf("Le risorse sono esaurite, il Consumatore %s va in sleep\n ", currentThread->getName());
+            cond_Consumer->Wait(resourceLock);
+        }
+
+        --resource;
+        printf("Il consumatore %s ha rimosso una risorsa, tot %d\n", currentThread->getName(), resource);
+
+        cond_Producer->Signal(resourceLock);
+        resourceLock->Release();
+    }
+}
+
+
+void SyncTest (){
+
+    DEBUG('t', "Entering in Sync test ");
+
+    Thread *p1 = new Thread("Produttore 1 ");
+    Thread *p2 = new Thread("Produttore 2 ");
+
+    Thread *c1 = new Thread("Consumatore 1 ");
+    Thread *c2 = new Thread("Consumatore 2 ");
+
+    p1->Fork(Producer, nullptr);
+    c1->Fork(Consumer, nullptr);
+    c2->Fork(Consumer, nullptr);
+    p2->Fork(Producer, nullptr);
+    
+}
+
 
 //----------------------------------------------------------------------
 // ThreadTest
