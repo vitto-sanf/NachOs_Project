@@ -95,7 +95,8 @@ class Thread {
     void setUserId(int userId) { uid = userId; }
    
     void setPriority (int p ) {priority = p; }
-    Thread(char* debugName);		// initialize a Thread 
+    Thread(char* debugName);		// initialize a Thread
+     Thread(char* debugName,int p);		// custom initialize a Thread  
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted
 					// must not be running when delete 

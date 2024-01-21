@@ -18,6 +18,36 @@
 int testnum = 1;
 
 //----------------------------------------------------------------------
+// TestPriority
+// 	Fork some Thread with different ways to initial the priority
+//----------------------------------------------------------------------
+
+void
+TestPriority()
+{
+
+    DEBUG('t', "Entering TestPriority");
+
+    Thread *t1 = new Thread("with p", 87);
+
+    Thread *t2 = new Thread("set p");
+    t2->setPriority(100);
+
+    Thread *t3 = new Thread("no p");
+
+    t1->Fork(CustomThreadFunc, (void*)0);
+    t2->Fork(CustomThreadFunc, (void*)0);
+    t3->Fork(CustomThreadFunc, (void*)0);
+
+    CustomThreadFunc(0); // Yield the current thread
+
+    printf("--- Calling TS command ---\n");
+    TS();
+    printf("--- End of TS command ---\n");
+    
+}
+
+//----------------------------------------------------------------------
 // TS command
 // Showing current threads' status (like ps in Linux)
 //----------------------------------------------------------------------
@@ -252,10 +282,14 @@ ThreadTest()
     case 1:
 	ThreadTest1();
 	break;
+    case 2 : 
+    TestPriority();
+    break;
+    case 3:
+    RRTest();
+    break;
     case 4 : 
     SyncTest();
-    case 5:
-    RRTest();
     break;
     default:
 	printf("No test specified.\n");
