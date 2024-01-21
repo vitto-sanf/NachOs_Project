@@ -37,6 +37,43 @@ TS()
     }
 }
 
+//----------------------------------------------------------------------
+// CustomThreadFunc
+//
+// "which" is simply a number identifying the operation to do on current thread
+//----------------------------------------------------------------------
+
+void
+CustomThreadFunc(int which)
+{
+    DEBUG('t', "Entering CustomThreadFunc");
+    printf("*** current thread (uid=%d, tid=%d, priority= %d,  name=%s) => ", currentThread->getUserId(), currentThread->getThreadId(), currentThread->getPriority(), currentThread->getName());
+    IntStatus oldLevel;
+    switch (which)
+    {
+        case 0:
+            printf("Yield\n");
+            scheduler->Print();
+            printf("\n\n");
+            currentThread->Yield();
+            break;
+        case 1:
+            printf("Sleep\n");
+            oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+            currentThread->Sleep();
+            (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+            break;
+        case 2:
+            printf("Finish\n");
+            currentThread->Finish();
+            break;
+        default:
+            printf("Yield (default)\n");
+            currentThread->Yield();
+            break;
+    }
+} 
+
 
 //----------------------------------------------------------------------
 // SimpleThread
@@ -155,6 +192,53 @@ void SyncTest (){
     
 }
 
+//----------------------------------------------------------------------
+// ThreadWithTicks
+//  Re-enable the interrupt to invoke OnTick() make system time moving forward
+//----------------------------------------------------------------------
+
+void
+ThreadWithTicks(int runningTime)
+{
+    int num;
+    
+    for (num = 0; num < runningTime * SystemTick; num++) {
+        printf("*** thread with running time %d looped %d times (stats->totalTicks: %d)\n", runningTime, num+1, stats->totalTicks);
+        interrupt->OneTick(); // make system time moving forward (advance simulated time)
+    }
+    currentThread->Finish();
+}
+
+//----------------------------------------------------------------------
+//  RRTest
+// 	Fork some Thread with different priority
+//----------------------------------------------------------------------
+
+void
+RRTest()
+{
+    DEBUG('t',"Entering RRTest()");
+
+    printf("\nSystem initial ticks:\tsystem=%d, user=%d, total=%d\n", stats->systemTicks, stats->userTicks, stats->totalTicks);
+
+    Thread *t1 = new Thread("7");
+    Thread *t2 = new Thread("2");
+    Thread *t3 = new Thread("5");
+
+    printf("\nAfter new Thread ticks:\tsystem=%d, user=%d, total=%d\n", stats->systemTicks, stats->userTicks, stats->totalTicks);
+
+    t1->Fork(ThreadWithTicks, (void*)7);
+    t2->Fork(ThreadWithTicks, (void*)2);
+    t3->Fork(ThreadWithTicks, (void*)5);
+
+    printf("\nAfter 3 fork() ticks:\tsystem=%d, user=%d, total=%d\n\n", stats->systemTicks, stats->userTicks, stats->totalTicks);
+
+    
+    scheduler->lastSwitchTick = stats->totalTicks;
+    currentThread->Yield(); // Yield the main thread
+}
+
+
 
 //----------------------------------------------------------------------
 // ThreadTest
@@ -170,6 +254,9 @@ ThreadTest()
 	break;
     case 4 : 
     SyncTest();
+    case 5:
+    RRTest();
+    break;
     default:
 	printf("No test specified.\n");
 	break;

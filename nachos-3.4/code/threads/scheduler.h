@@ -19,6 +19,7 @@
 
 class Scheduler {
   public:
+    int lastSwitchTick;
     Scheduler();			// Initialize list of ready threads 
     ~Scheduler();			// De-allocate ready list
 
@@ -32,5 +33,6 @@ class Scheduler {
     List *readyList;  		// queue of threads that are ready to run,
 				// but not running
 };
+extern void RRHandler(int dummy);
 
 #endif // SCHEDULER_H
