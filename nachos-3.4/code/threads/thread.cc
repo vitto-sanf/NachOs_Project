@@ -32,7 +32,7 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char* threadName)
+Thread::Thread(char* debugName)
         : priority (p)
 {
     //vado a cercare un posto libero all'interno dell' array , se lo trovo l' indice dell' array
@@ -54,7 +54,7 @@ Thread::Thread(char* threadName)
     ASSERT(success_allocate); // fai l'abort se non c'è posto per allocare un nuovo thread
    
 
-    name = threadName;
+    name = debugName;
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
@@ -64,8 +64,8 @@ Thread::Thread(char* threadName)
 #endif
 }
 
-Thread::Thread (char* threadName)
-        : Thread(ThreadName,0) 
+Thread::Thread (char* debugName)
+        : Thread(debugName,0) 
 {}
 
 
