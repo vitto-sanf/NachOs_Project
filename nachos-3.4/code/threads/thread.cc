@@ -32,7 +32,7 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char* debugName)
+Thread::Thread(char* debugName,int p)
         : priority (p)
 {
     //vado a cercare un posto libero all'interno dell' array , se lo trovo l' indice dell' array
